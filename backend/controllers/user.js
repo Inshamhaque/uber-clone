@@ -12,7 +12,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loginUser = exports.registerUser = void 0;
+exports.logout = exports.userProfile = exports.loginUser = exports.registerUser = void 0;
+const blacklist_models_1 = require("../models/blacklist.models");
 const user_models_1 = require("../models/user.models");
 const user_1 = require("../services/user");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -59,6 +60,13 @@ const loginUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         });
     }
     const token = jsonwebtoken_1.default.sign({ _id: user._id }, 'JWT_SECRET');
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 24 * 60 * 60 * 1000 // Optional: Sets the expiration time (1 day in milliseconds)
+    });
+    // res.set('Authorizaton',token);
     return res.status(201).json({
         token,
         message: "user login successful",
@@ -67,3 +75,17 @@ const loginUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function
 });
 exports.loginUser = loginUser;
 // get profiles of user
+const userProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    res.status(200).json(req.user);
+});
+exports.userProfile = userProfile;
+//logout user 
+const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    res.clearCookie('token');
+    const token = req.cookies.token || req.headers.authorization.split(' ')[1];
+    yield blacklist_models_1.blackListModel.create({ token });
+    res.status(200).json({
+        message: "logged out"
+    });
+});
+exports.logout = logout;

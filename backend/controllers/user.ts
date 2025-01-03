@@ -1,3 +1,4 @@
+import { blackListModel } from "../models/blacklist.models";
 import { userModel } from "../models/user.models";
 import { createUser } from "../services/user";
 import bcrypt from 'bcrypt';
@@ -11,7 +12,7 @@ export const registerUser = async(req:any,res:any,next:any)=>{
     if(isPresent){
        return res.status(400).json({
          message : "user already exists"
-       }) 
+       })
     }
     // creating user using pre defined function earlier
     const user = await createUser({
@@ -44,7 +45,14 @@ export const loginUser = async(req:any,res:any,next:any)=>{
         })
     }
     const token = jwt.sign({_id:user._id},'JWT_SECRET');
-    res.cookie('token',token);
+    res.cookie('token', token, { 
+        httpOnly: true, // Prevents client-side scripts from accessing the cookie
+        secure: process.env.NODE_ENV === 'production', // Ensures cookies are sent over HTTPS in production
+        sameSite: 'lax', // Controls cross-origin requests
+        maxAge: 24 * 60 * 60 * 1000 // Optional: Sets the expiration time (1 day in milliseconds)
+    });
+      
+    // res.set('Authorizaton',token);
     return res.status(201).json({
         token,
         message : "user login successful",
@@ -53,3 +61,15 @@ export const loginUser = async(req:any,res:any,next:any)=>{
 }
 
 // get profiles of user
+export const userProfile = async(req:any,res:any,next:any)=>{
+    res.status(200).json(req.user);
+}
+//logout user 
+export const logout = async(req:any,res:any,next:any)=>{
+    res.clearCookie('token');
+    const token = req.cookies.token || req.headers.authorization.split(' ')[1];
+    await blackListModel.create({token});
+    res.status(200).json({
+        message : "logged out"
+    });
+}
