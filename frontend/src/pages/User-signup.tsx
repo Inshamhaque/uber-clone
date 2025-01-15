@@ -35,7 +35,6 @@ export function Usersignup() {
         `${import.meta.env.VITE_BACKEND_URL}/user/register`,
         credentials
       );
-
       if (res.status === 201) {
         console.log("User created successfully");
         toast.success("User created successfully", {

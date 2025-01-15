@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createCaptain = void 0;
+exports.createCaptain = createCaptain;
 const captain_models_1 = require("../models/captain.models");
-function createCaptain({ firstname, password, lastname, vehicle, email, location }) {
-    return __awaiter(this, void 0, void 0, function* () {
+function createCaptain(_a) {
+    return __awaiter(this, arguments, void 0, function* ({ firstname, password, lastname, vehicle, email, location }) {
         if (!firstname || !email || !vehicle || !password) {
             console.log(firstname);
             console.log(lastname);
@@ -36,4 +36,3 @@ function createCaptain({ firstname, password, lastname, vehicle, email, location
         }
     });
 }
-exports.createCaptain = createCaptain;

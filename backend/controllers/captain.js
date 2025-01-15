@@ -12,7 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.captainProfile = exports.loginCaptain = exports.register = void 0;
+exports.register = register;
+exports.loginCaptain = loginCaptain;
+exports.captainProfile = captainProfile;
+exports.logout = logout;
 const blacklist_models_1 = require("../models/blacklist.models");
 const captain_models_1 = require("../models/captain.models");
 const captain_1 = require("../services/captain");
@@ -52,7 +55,6 @@ function register(req, res) {
         });
     });
 }
-exports.register = register;
 //login handler
 function loginCaptain(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -72,9 +74,9 @@ function loginCaptain(req, res) {
         //generate token here, if correct credentials are given
         const token = jsonwebtoken_1.default.sign({ _id: captain._id }, 'JWT_SECRET');
         res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            httpOnly: true, // Prevents client-side scripts from accessing the cookie
+            secure: process.env.NODE_ENV === 'production', // Ensures cookies are sent over HTTPS in production
+            sameSite: 'lax', // Controls cross-origin requests
             maxAge: 24 * 60 * 60 * 1000 // Optional: Sets the expiration time (1 day in milliseconds)
         });
         return res.status(201).json({
@@ -84,14 +86,12 @@ function loginCaptain(req, res) {
         });
     });
 }
-exports.loginCaptain = loginCaptain;
 // get captain profile 
 function captainProfile(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         res.status(200).json(req.captain);
     });
 }
-exports.captainProfile = captainProfile;
 // logout handler 
 function logout(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -108,4 +108,3 @@ function logout(req, res) {
         });
     });
 }
-exports.logout = logout;

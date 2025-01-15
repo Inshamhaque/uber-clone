@@ -9,10 +9,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createUser = void 0;
+exports.createUser = createUser;
 const user_models_1 = require("../models/user.models");
-function createUser({ firstname, lastname, email, password }) {
-    return __awaiter(this, void 0, void 0, function* () {
+function createUser(_a) {
+    return __awaiter(this, arguments, void 0, function* ({ firstname, lastname, email, password }) {
         if (!firstname || !email || !password) {
             throw new Error('All fields are required');
         }
@@ -27,4 +27,3 @@ function createUser({ firstname, lastname, email, password }) {
         return user;
     });
 }
-exports.createUser = createUser;

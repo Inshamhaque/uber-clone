@@ -61,9 +61,9 @@ const loginUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     }
     const token = jsonwebtoken_1.default.sign({ _id: user._id }, 'JWT_SECRET');
     res.cookie('token', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
+        httpOnly: true, // Prevents client-side scripts from accessing the cookie
+        secure: process.env.NODE_ENV === 'production', // Ensures cookies are sent over HTTPS in production
+        sameSite: 'lax', // Controls cross-origin requests
         maxAge: 24 * 60 * 60 * 1000 // Optional: Sets the expiration time (1 day in milliseconds)
     });
     // res.set('Authorizaton',token);
