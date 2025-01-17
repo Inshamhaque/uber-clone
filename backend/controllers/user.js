@@ -26,7 +26,7 @@ const registerUser = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     const hashedPassword = yield bcrypt_1.default.hash(password, 10);
     if (isPresent) {
         return res.status(400).json({
-            message: "user already exists"
+            message: "user already exists",
         });
     }
     // creating user using pre defined function earlier
@@ -34,43 +34,46 @@ const registerUser = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         firstname: fullname.firstname,
         lastname: fullname.lastname,
         email,
-        password: hashedPassword
+        password: hashedPassword,
     });
-    const token = jsonwebtoken_1.default.sign({ _id: user._id }, 'JWT_SECRET');
+    const token = jsonwebtoken_1.default.sign({ _id: user._id }, "JWT_SECRET");
     return res.status(201).json({
         message: "User created successfully",
         token,
-        user
+        user,
     });
 });
 exports.registerUser = registerUser;
-// user login 
+// user login
 const loginUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    const user = yield user_models_1.userModel.findOne({ email }).select('+password');
+    const user = yield user_models_1.userModel.findOne({ email }).select("+password");
     if (!user) {
         return res.status(401).json({
-            message: "Invalid email or password"
+            message: "Invalid email or password",
         });
     }
     const match = yield bcrypt_1.default.compare(password, user.password);
     if (!match) {
         return res.status(401).json({
-            message: "invalid email or password"
+            message: "invalid email or password",
         });
     }
-    const token = jsonwebtoken_1.default.sign({ _id: user._id }, 'JWT_SECRET');
-    res.cookie('token', token, {
+    const token = jsonwebtoken_1.default.sign({ _id: user._id }, "JWT_SECRET");
+    // set cookie in here
+    res.cookie("token", token, {
         httpOnly: true, // Prevents client-side scripts from accessing the cookie
-        secure: process.env.NODE_ENV === 'production', // Ensures cookies are sent over HTTPS in production
-        sameSite: 'lax', // Controls cross-origin requests
-        maxAge: 24 * 60 * 60 * 1000 // Optional: Sets the expiration time (1 day in milliseconds)
+        // secure: process.env.NODE_ENV === "", // Ensures cookies are sent over HTTPS in production
+        sameSite: "None", // Controls cross-origin requests
+        maxAge: 24 * 60 * 60 * 1000, // Optional: Sets the expiration time (1 day in milliseconds),
+        secure: false,
     });
-    // res.set('Authorizaton',token);
+    console.log("cookie set successfully");
+    res.set("Authorizaton", token);
     return res.status(201).json({
         token,
         message: "user login successful",
-        user
+        user,
     });
 });
 exports.loginUser = loginUser;
@@ -79,13 +82,13 @@ const userProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     res.status(200).json(req.user);
 });
 exports.userProfile = userProfile;
-//logout user 
+//logout user
 const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.clearCookie('token');
-    const token = req.cookies.token || req.headers.authorization.split(' ')[1];
+    res.clearCookie("token");
+    const token = req.cookies.token || req.headers.authorization.split(" ")[1];
     yield blacklist_models_1.blackListModel.create({ token });
     res.status(200).json({
-        message: "logged out"
+        message: "logged out",
     });
 });
 exports.logout = logout;

@@ -43,6 +43,26 @@ export const captainloginSchema = zod.object({
 export const addressSchema = zod.object({
   address: zod.string().min(3),
 });
+// create ride schema
+export const createRideSchema = z.object({
+  pickup: z
+    .string({
+      required_error: "Pickup location is required.",
+      invalid_type_error: "Pickup location must be a string.",
+    })
+    .min(1, "Pickup location cannot be empty."),
+  destination: z
+    .string({
+      required_error: "Destination location is required.",
+      invalid_type_error: "Destination location must be a string.",
+    })
+    .min(1, "Destination location cannot be empty."),
+  vehicleType: z.enum(["car", "bike", "auto"], {
+    required_error: "Vehicle type is required.",
+    invalid_type_error: "Vehicle type must be one of 'car', 'bike', or 'auto'.",
+  }),
+});
+
 export const validate = (schema: any) => (req: any, res: any, next: any) => {
   const result = schema.safeParse(req.body);
   if (result.success) {

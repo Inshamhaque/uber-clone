@@ -87,6 +87,7 @@ function getAutoSuggestions(input) {
                     input,
                 },
             });
+            console.log("preds is : ", response);
             if (response.data.status === "OK") {
                 const pred = response.data.predictions;
                 predictions = pred

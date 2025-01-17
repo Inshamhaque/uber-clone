@@ -1,4 +1,5 @@
 import axios from "axios";
+import { response } from "express";
 import { object } from "zod";
 export async function getCoordinate(address: string) {
   const apiKey = process.env.GOOGLE_MAPS_API_KEY;
@@ -79,6 +80,7 @@ export async function getAutoSuggestions(input: string) {
         },
       }
     );
+    console.log("preds is : ", response);
     if (response.data.status === "OK") {
       const pred = response.data.predictions;
       predictions = pred

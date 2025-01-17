@@ -20,26 +20,28 @@ const captain_models_1 = require("../models/captain.models");
 const authUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies.token || req.headers.authorization;
     if (!token) {
+        console.log("no token is there");
         return res.status(401).json({
-            message: 'unauthorized'
+            message: "unauthorized",
         });
     }
     const isBlackListed = yield blacklist_models_1.blackListModel.findOne({ token });
     if (isBlackListed) {
         return res.status(401).json({
-            message: 'unauthorized'
+            message: "unauthorized",
         });
     }
     try {
-        const decoded = jsonwebtoken_1.default.verify(token, 'JWT_SECRET');
+        const decoded = jsonwebtoken_1.default.verify(token, "JWT_SECRET");
         //@ts-ignore
         const user = yield user_models_1.userModel.findById(decoded._id);
         req.user = user;
         return next();
     }
     catch (e) {
+        console.error("unauthorized access invoked");
         return res.status(401).json({
-            message: 'unauthorized'
+            message: "unauthorized",
         });
     }
 });
@@ -47,26 +49,29 @@ exports.authUser = authUser;
 const authCaptain = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.cookies.token || req.headers.authorization;
     if (!token) {
+        console.log("no token is there");
+        console.log("token is there : ", token);
         return res.status(401).json({
-            message: 'unauthorized'
+            message: "unauthorized",
         });
     }
     const isBlackListed = yield blacklist_models_1.blackListModel.findOne({ token });
     if (isBlackListed) {
         return res.status(401).json({
-            message: 'unauthorized'
+            message: "unauthorized",
         });
     }
     try {
-        const decoded = jsonwebtoken_1.default.verify(token, 'JWT_SECRET');
+        const decoded = jsonwebtoken_1.default.verify(token, "JWT_SECRET");
         //@ts-ignore
         const captain = yield captain_models_1.captainModel.findById(decoded._id);
         req.captain = captain;
         return next();
     }
     catch (e) {
+        console.log("there is error in here");
         return res.status(401).json({
-            message: 'unauthorized'
+            message: "unauthorized",
         });
     }
 });

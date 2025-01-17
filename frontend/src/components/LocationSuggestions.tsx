@@ -1,24 +1,26 @@
-export function LocationSuggestions({setpanel, setvehicelpanelopen} :any){
-    const locations = [
-        "C-1805, BPTP Princess Park, Sector 86 Faridabad, Haryana",
-        "C3-1302, SRS Residency, Sector 88 Faridabad, Haryana"
-    ]
-    return(
-        <div>
-            {locations.map((el,idx)=>{
-                return(
-                    <div 
-                    onClick={()=>{
-                        setpanel(false);
-                        // setpanelclose(true);
-                        setvehicelpanelopen(true);
-                        
-                    }}
-                    className="flex flex-col mb-3 p-2 border rounded-lg bg-[#eee] ">
-                        {el}
-                    </div>
-                )
-            })}
-        </div>
-    )
+export function LocationSuggestions({
+  suggestions,
+  setpanel,
+  setvehicelpanelopen,
+}: any) {
+  return (
+    <div>
+      {suggestions?.result?.length > 0 ? (
+        suggestions.result.map((el: any, idx: number) => (
+          <div
+            key={idx}
+            onClick={() => {
+              setpanel(false);
+              setvehicelpanelopen(true);
+            }}
+            className="flex flex-col mb-3 p-2 border rounded-lg bg-[#eee]"
+          >
+            {el.description}
+          </div>
+        ))
+      ) : (
+        <p>No suggestions available</p>
+      )}
+    </div>
+  );
 }
