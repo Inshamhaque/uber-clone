@@ -94,3 +94,39 @@ export async function getAutoSuggestions(input: string) {
     console.error("error fetching response", e);
   }
 }
+
+export async function getDirections(source: string, destination: string) {
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+
+  try {
+    const endpoint = `https://maps.googleapis.com/maps/api/directions/json`;
+
+    const response = await axios.get(endpoint, {
+      params: {
+        origin: source,
+        destination: destination,
+        mode: "driving",
+        key: apiKey,
+      },
+    });
+
+    if (response.data.status !== "OK") {
+      throw new Error(`Google Maps API error: ${response.data.status}`);
+    }
+    const directions = response.data.routes[0];
+    const legs = directions.legs[0];
+
+    return {
+      distance: legs.distance.text,
+      duration: legs.duration.text,
+      steps: legs.steps.map((step: any) => ({
+        instruction: step.html_instructions,
+        distance: step.distance.text,
+        duration: step.duration.text,
+      })),
+    };
+  } catch (error) {
+    console.error("Error fetching directions:", error);
+    throw new Error("Unable to fetch directions. Please try again later.");
+  }
+}

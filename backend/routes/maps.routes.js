@@ -20,3 +20,6 @@ router.get("/auto-complete", auth_1.authUser, (req, res) => {
 router.get("/get-fare", (req, res) => {
     (0, map_controller_1.fare)(req, res);
 });
+router.get("/directions", (req, res) => {
+    (0, map_controller_1.Directons)(req, res);
+});

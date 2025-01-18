@@ -2,6 +2,7 @@ import {
   getAutoSuggestions,
   getCoordinate,
   getDistancetime,
+  getDirections,
 } from "../services/maps.service";
 import { calculateFare } from "../services/ride.service";
 export async function getAddressCoordinates(req: any, res: any) {
@@ -60,6 +61,21 @@ export async function fare(req: any, res: any) {
   } catch (e) {
     res.status(400).json({
       message: "error calculating fare",
+    });
+  }
+}
+export async function Directons(req: any, res: any) {
+  const { source, destination } = req.query;
+  try {
+    const directions = await getDirections(source, destination);
+    if (directions) {
+      res.status(201).json({
+        directions,
+      });
+    }
+  } catch (e) {
+    res.status(400).json({
+      message: "some error occurred",
     });
   }
 }

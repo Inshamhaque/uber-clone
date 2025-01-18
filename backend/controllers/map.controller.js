@@ -13,6 +13,7 @@ exports.getAddressCoordinates = getAddressCoordinates;
 exports.DistanceTime = DistanceTime;
 exports.autoComplete = autoComplete;
 exports.fare = fare;
+exports.Directons = Directons;
 const maps_service_1 = require("../services/maps.service");
 const ride_service_1 = require("../services/ride.service");
 function getAddressCoordinates(req, res) {
@@ -81,6 +82,24 @@ function fare(req, res) {
         catch (e) {
             res.status(400).json({
                 message: "error calculating fare",
+            });
+        }
+    });
+}
+function Directons(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { source, destination } = req.query;
+        try {
+            const directions = yield (0, maps_service_1.getDirections)(source, destination);
+            if (directions) {
+                res.status(201).json({
+                    directions,
+                });
+            }
+        }
+        catch (e) {
+            res.status(400).json({
+                message: "some error occurred",
             });
         }
     });

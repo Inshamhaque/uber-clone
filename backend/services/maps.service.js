@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getCoordinate = getCoordinate;
 exports.getDistancetime = getDistancetime;
 exports.getAutoSuggestions = getAutoSuggestions;
+exports.getDirections = getDirections;
 const axios_1 = __importDefault(require("axios"));
 function getCoordinate(address) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -100,6 +101,40 @@ function getAutoSuggestions(input) {
         }
         catch (e) {
             console.error("error fetching response", e);
+        }
+    });
+}
+function getDirections(source, destination) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+        try {
+            const endpoint = `https://maps.googleapis.com/maps/api/directions/json`;
+            const response = yield axios_1.default.get(endpoint, {
+                params: {
+                    origin: source,
+                    destination: destination,
+                    mode: "driving",
+                    key: apiKey,
+                },
+            });
+            if (response.data.status !== "OK") {
+                throw new Error(`Google Maps API error: ${response.data.status}`);
+            }
+            const directions = response.data.routes[0];
+            const legs = directions.legs[0];
+            return {
+                distance: legs.distance.text,
+                duration: legs.duration.text,
+                steps: legs.steps.map((step) => ({
+                    instruction: step.html_instructions,
+                    distance: step.distance.text,
+                    duration: step.duration.text,
+                })),
+            };
+        }
+        catch (error) {
+            console.error("Error fetching directions:", error);
+            throw new Error("Unable to fetch directions. Please try again later.");
         }
     });
 }

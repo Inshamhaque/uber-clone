@@ -3,6 +3,7 @@ import { authUser } from "../middlewares/auth";
 import { validate, addressSchema } from "../middlewares/validate";
 import {
   autoComplete,
+  Directons,
   DistanceTime,
   fare,
   getAddressCoordinates,
@@ -22,4 +23,7 @@ router.get("/auto-complete", authUser, (req, res) => {
 });
 router.get("/get-fare", (req, res) => {
   fare(req, res);
+});
+router.get("/directions", (req, res) => {
+  Directons(req, res);
 });
