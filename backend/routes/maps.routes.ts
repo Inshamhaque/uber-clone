@@ -4,6 +4,7 @@ import { validate, addressSchema } from "../middlewares/validate";
 import {
   autoComplete,
   DistanceTime,
+  fare,
   getAddressCoordinates,
 } from "../controllers/map.controller";
 const router = express.Router();
@@ -18,4 +19,7 @@ router.get("/get-distance-time", authUser, (req, res) => {
 });
 router.get("/auto-complete", authUser, (req, res) => {
   autoComplete(req, res);
+});
+router.get("/get-fare", (req, res) => {
+  fare(req, res);
 });

@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.calculateFare = calculateFare;
 exports.createRide = createRide;
 const ride_models_1 = require("../models/ride.models");
 const maps_service_1 = require("./maps.service");

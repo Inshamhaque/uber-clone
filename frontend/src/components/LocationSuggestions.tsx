@@ -1,7 +1,8 @@
 export function LocationSuggestions({
   suggestions,
-  setpanel,
-  setvehicelpanelopen,
+  setpickup,
+  setdestination,
+  inputchosen,
 }: any) {
   return (
     <div>
@@ -10,8 +11,9 @@ export function LocationSuggestions({
           <div
             key={idx}
             onClick={() => {
-              setpanel(false);
-              setvehicelpanelopen(true);
+              inputchosen == "pickup"
+                ? setpickup(el.description)
+                : setdestination(el.description);
             }}
             className="flex flex-col mb-3 p-2 border rounded-lg bg-[#eee]"
           >

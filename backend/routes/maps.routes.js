@@ -17,3 +17,6 @@ router.get("/get-distance-time", auth_1.authUser, (req, res) => {
 router.get("/auto-complete", auth_1.authUser, (req, res) => {
     (0, map_controller_1.autoComplete)(req, res);
 });
+router.get("/get-fare", (req, res) => {
+    (0, map_controller_1.fare)(req, res);
+});

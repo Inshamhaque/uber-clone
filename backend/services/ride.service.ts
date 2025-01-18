@@ -23,7 +23,7 @@ const fareRates = {
   },
 };
 
-async function calculateFare(
+export async function calculateFare(
   source: string,
   destination: string,
   vehicleType: VehicleType

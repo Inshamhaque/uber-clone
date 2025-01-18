@@ -4,7 +4,10 @@ import { LocationSuggestions } from "../components/LocationSuggestions";
 import { VehicleSuggestions } from "../components/VehicleSuggestions";
 import { RideSummary } from "../components/RideSummary";
 import axios from "axios";
-
+type inputs = {
+  pickup: string;
+  destination: string;
+};
 export function Dashboard() {
   const [panelopen, setpanelopen] = useState(false);
   const [vehiclepanelopen, setvehiclepanelopen] = useState(false);
@@ -19,6 +22,9 @@ export function Dashboard() {
   const rideSummaryPanelRef = useRef(null);
   const pickupRef = useRef(null);
   const destinationRef = useRef(null);
+  const [inputchosen, setinputchosen] = useState<
+    "pickup" | "destination" | null
+  >(null);
   // Fetch location suggestions from the backend API
   const fetchLocationSuggestions = async (query: string) => {
     console.log("Input is:", query);
@@ -97,7 +103,7 @@ export function Dashboard() {
   }, [rideSummaryPanel]);
 
   return (
-    <div className="overflow-hidden h-screen">
+    <div className="overflow-hidden  h-screen">
       <div ref={backgroundPanel} className="h-[70%] h-screen w-screen">
         <img
           src="https://www.researchgate.net/publication/323759986/figure/fig3/AS:631576123682823@1527590890164/Map-in-Uber-application-tracking-user-in-a-Yellow-Cab.png"
@@ -146,17 +152,19 @@ export function Dashboard() {
                 <path d="M4.25 2A2.25 2.25 0 0 0 2 4.25v2a.75.75 0 0 0 1.5 0v-2a.75.75 0 0 1 .75-.75h2a.75.75 0 0 0 0-1.5h-2ZM13.75 2a.75.75 0 0 0 0 1.5h2a.75.75 0 0 1 .75.75v2a.75.75 0 0 0 1.5 0v-2A2.25 2.25 0 0 0 15.75 2h-2ZM3.5 13.75a.75.75 0 0 0-1.5 0v2A2.25 2.25 0 0 0 4.25 18h2a.75.75 0 0 0 0-1.5h-2a.75.75 0 0 1-.75-.75v-2ZM18 13.75a.75.75 0 0 0-1.5 0v2a.75.75 0 0 1-.75.75h-2a.75.75 0 0 0 0 1.5h2A2.25 2.25 0 0 0 18 15.75v-2ZM7 10a3 3 0 1 1 6 0 3 3 0 0 1-6 0Z" />
               </svg>
             </div>
-            {/* pickup input */}
+            {/* pickup input field */}
             <input
               ref={pickupRef}
               // value={pickup} find a way to place the value chosen at the correct input spot
               onClick={() => {
                 setpanelopen(true);
+                setInput(pickup ?? "");
+                setinputchosen("pickup");
               }}
               type="text"
               placeholder="Add a pickup location"
               className="w-full bg-gray-200 mb-4 px-10 py-2 rounded-lg active:border-black"
-              value={input}
+              value={pickup}
               onChange={handleLocationInputChange}
             />
             <div className="absolute mt-3 ml-2">
@@ -173,12 +181,16 @@ export function Dashboard() {
                 />
               </svg>
             </div>
+            {/* destination input field */}
             <input
               ref={destinationRef}
               value={destination}
               onClick={() => {
                 setpanelopen(true);
+                setInput(destination ?? "");
+                setinputchosen("destination");
               }}
+              onChange={handleLocationInputChange}
               type="text"
               placeholder="Enter your destination"
               className="w-full bg-gray-200 mb-4 px-10 py-2 rounded-lg active:border-black"
@@ -197,10 +209,11 @@ export function Dashboard() {
 
         <div ref={panelRef} className="pt-20 h-0">
           <LocationSuggestions
-            setpanel={setpanelopen}
-            setvehicelpanelopen={setvehiclepanelopen}
             suggestions={locationSuggestions}
             setSuggestions={setLocationSuggestions}
+            setpickup={setpickup}
+            setdestination={setdestination}
+            inputchosen={inputchosen}
           />
         </div>
       </div>
@@ -212,6 +225,8 @@ export function Dashboard() {
         <VehicleSuggestions
           setrideSummaryPanel={setrideSummaryPanel}
           setvehiclepanelopen={setvehiclepanelopen}
+          source={pickup}
+          destination={destination}
         />
       </div>
 

@@ -1,7 +1,33 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
+
 export function VehicleSuggestions({
   setrideSummaryPanel,
   setvehiclepanelopen,
+  source,
+  destination,
 }: any) {
+  const [carprice, setcarprice] = useState();
+  const [bikeprice, setbikeprice] = useState();
+  const [autoprice, setautoprice] = useState();
+  useEffect(() => {
+    const fetchFare = async () => {
+      console.log(source);
+      console.log(destination);
+      const response = await axios.get("http://localhost:8080/maps/get-fare", {
+        params: {
+          source,
+          destination,
+        },
+      });
+      if (response) {
+        setcarprice(response.data.car_price.fare);
+        setautoprice(response.data.auto_price.fare);
+        setbikeprice(response.data.bike_price.fare);
+      }
+    };
+    fetchFare();
+  }, [source, destination]);
   const vehicles = [
     {
       logo: "https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg", // Replace with actual image URL
@@ -10,7 +36,7 @@ export function VehicleSuggestions({
       time: "2 mins away",
       arrivalTime: "15:24",
       description: "Affordable, compact rides",
-      price: "₹193.20",
+      price: carprice,
       selected: true,
     },
     {
@@ -20,7 +46,7 @@ export function VehicleSuggestions({
       time: "3 mins away",
       arrivalTime: "15:24",
       description: "Affordable motorcycle rides",
-      price: "₹65.17",
+      price: bikeprice,
       selected: false,
     },
     {
@@ -30,7 +56,7 @@ export function VehicleSuggestions({
       time: "2 mins away",
       arrivalTime: "15:24",
       description: "Affordable auto rides",
-      price: "₹118.21",
+      price: autoprice,
       selected: false,
     },
   ];

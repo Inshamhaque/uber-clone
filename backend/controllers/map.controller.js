@@ -12,7 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAddressCoordinates = getAddressCoordinates;
 exports.DistanceTime = DistanceTime;
 exports.autoComplete = autoComplete;
+exports.fare = fare;
 const maps_service_1 = require("../services/maps.service");
+const ride_service_1 = require("../services/ride.service");
 function getAddressCoordinates(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { address } = req.query;
@@ -59,6 +61,26 @@ function autoComplete(req, res) {
         catch (e) {
             res.status(404).json({
                 message: "some error occurred",
+            });
+        }
+    });
+}
+function fare(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { source, destination } = req.query;
+        try {
+            const auto_price = yield (0, ride_service_1.calculateFare)(source, destination, "auto");
+            const bike_price = yield (0, ride_service_1.calculateFare)(source, destination, "bike");
+            const car_price = yield (0, ride_service_1.calculateFare)(source, destination, "car");
+            return res.status(200).json({
+                bike_price,
+                car_price,
+                auto_price,
+            });
+        }
+        catch (e) {
+            res.status(400).json({
+                message: "error calculating fare",
             });
         }
     });
