@@ -16,6 +16,7 @@ exports.register = register;
 exports.loginCaptain = loginCaptain;
 exports.captainProfile = captainProfile;
 exports.logout = logout;
+exports.activeCaptain = activeCaptain;
 const blacklist_models_1 = require("../models/blacklist.models");
 const captain_models_1 = require("../models/captain.models");
 const captain_1 = require("../services/captain");
@@ -26,14 +27,13 @@ function register(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { fullname, vehicle, password, email, location } = req.body;
         const isPresent = yield captain_models_1.captainModel.findOne({
-            email
+            email,
         });
         if (isPresent) {
             return res.status(400).json({
-                message: "user already exists"
+                message: "user already exists",
             });
         }
-        ;
         const hashedPassword = yield bcrypt_1.default.hash(password, 10);
         const captain = yield (0, captain_1.createCaptain)({
             firstname: fullname.firstname,
@@ -41,17 +41,17 @@ function register(req, res) {
             lastname: fullname.lastname,
             email,
             vehicle,
-            location
+            location,
         });
         if (!captain) {
-            console.error('error occured while creaitng captain : ');
+            console.error("error occured while creaitng captain : ");
         }
         console.log(captain);
-        const token = jsonwebtoken_1.default.sign({ _id: captain._id }, 'JWT_SECRET');
+        const token = jsonwebtoken_1.default.sign({ _id: captain._id }, "JWT_SECRET");
         return res.status(201).json({
             message: "captain created successfully",
             captain,
-            token
+            token,
         });
     });
 }
@@ -59,52 +59,77 @@ function register(req, res) {
 function loginCaptain(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { email, password } = req.body;
-        const captain = yield captain_models_1.captainModel.findOne({ email }).select('+password');
+        const captain = yield captain_models_1.captainModel.findOne({ email }).select("+password");
         if (!captain) {
             return res.status(401).json({
-                message: 'invalid email or password'
+                message: "invalid email or password",
             });
         }
         const isMatch = bcrypt_1.default.compare(password, captain.password);
         if (!isMatch) {
             return res.status(401).json({
-                message: "invalid email or password"
+                message: "invalid email or password",
             });
         }
         //generate token here, if correct credentials are given
-        const token = jsonwebtoken_1.default.sign({ _id: captain._id }, 'JWT_SECRET');
-        res.cookie('token', token, {
+        const token = jsonwebtoken_1.default.sign({ _id: captain._id }, "JWT_SECRET");
+        res.cookie("token", token, {
             httpOnly: true, // Prevents client-side scripts from accessing the cookie
-            secure: process.env.NODE_ENV === 'production', // Ensures cookies are sent over HTTPS in production
-            sameSite: 'lax', // Controls cross-origin requests
-            maxAge: 24 * 60 * 60 * 1000 // Optional: Sets the expiration time (1 day in milliseconds)
+            secure: process.env.NODE_ENV === "production", // Ensures cookies are sent over HTTPS in production
+            sameSite: "lax", // Controls cross-origin requests
+            maxAge: 24 * 60 * 60 * 1000, // Optional: Sets the expiration time (1 day in milliseconds)
         });
         return res.status(201).json({
             token,
-            message: 'captain login successfull',
-            captain
+            message: "captain login successfull",
+            captain,
         });
     });
 }
-// get captain profile 
+// get captain profile
 function captainProfile(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         res.status(200).json(req.captain);
     });
 }
-// logout handler 
+// logout handler
 function logout(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const token = req.cookies.token || req.headers.authorization.split(' ')[1];
+        const token = req.cookies.token || req.headers.authorization.split(" ")[1];
         if (!token) {
             return res.status(401).json({
-                message: 'uunauthroized access, how did  u bypass middlware'
+                message: "uunauthroized access, how did  u bypass middlware",
             });
         }
-        res.clearCookie('token');
+        res.clearCookie("token");
         yield blacklist_models_1.blackListModel.create({ token });
         res.status(200).json({
-            message: "logged out"
+            message: "logged out",
         });
+    });
+}
+// profile update
+function activeCaptain(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const captain = req.captain;
+            const { email } = captain;
+            if (!email) {
+                return res.status(400).json({ message: "Email is required." });
+            }
+            const result = yield captain_models_1.captainModel.updateOne({ email }, { $set: { status: "active" } });
+            if (result.nModified === 0) {
+                return res
+                    .status(404)
+                    .json({ message: "Captain not found or already active." });
+            }
+            return res
+                .status(200)
+                .json({ message: "Captain status updated to active." });
+        }
+        catch (error) {
+            console.error("Error updating captain:", error);
+            return res.status(500).json({ message: "Internal server error." });
+        }
     });
 }

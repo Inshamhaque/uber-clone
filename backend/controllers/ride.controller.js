@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ridecreator = ridecreator;
+exports.pendingrides = pendingrides;
+const ride_models_1 = require("../models/ride.models");
 const ride_service_1 = require("../services/ride.service");
 function ridecreator(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -38,6 +40,23 @@ function ridecreator(req, res) {
             return res.status(500).json({
                 message: "Unable to create ride.",
                 error,
+            });
+        }
+    });
+}
+function pendingrides(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const rides = yield ride_models_1.rideModel.find({
+                status: "pending",
+            });
+            return res.status(201).json({
+                rides,
+            });
+        }
+        catch (e) {
+            return res.status(400).json({
+                message: "some error occurred",
             });
         }
     });

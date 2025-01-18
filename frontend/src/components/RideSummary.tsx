@@ -1,4 +1,33 @@
-export function RideSummary({ setrideSummaryPanel }: any) {
+import { useState, useEffect } from "react";
+import axios from "axios";
+export function RideSummary({
+  setrideSummaryPanel,
+  pickup,
+  destination,
+  vehiclePrice,
+  vehicleType,
+}: any) {
+  // can add an animation in the car image part like car,bike and auto come and leave synchronously,
+  // const [price, setprice] = useState();
+  const createRideHandler = async () => {
+    // console.log(localStorage.getItem("token"));
+    const response = await axios.post(
+      "http://localhost:8080/rides/create-ride",
+      {
+        pickup,
+        destination,
+        vehicleType: vehicleType.toLowerCase(),
+      },
+      {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      }
+    );
+    if (response) {
+      console.log("ride created successfully");
+    }
+  };
   return (
     <div className="flex flex-col items-center w-full bg-white rounded-t-lg">
       {/* Title */}
@@ -20,9 +49,11 @@ export function RideSummary({ setrideSummaryPanel }: any) {
         <div className="flex items-center mb-1">
           <span className="text-xl text-gray-500 mr-2">📍</span>
           <div>
-            <div className="font-semibold text-black">562/11-A</div>
+            <div className="font-semibold text-black">
+              {splitAddress(pickup ?? "").first}
+            </div>
             <div className="text-sm text-gray-500">
-              Kaikondrahalli, Bengaluru, Karnataka
+              {splitAddress(pickup ?? "").second}
             </div>
           </div>
         </div>
@@ -33,10 +64,11 @@ export function RideSummary({ setrideSummaryPanel }: any) {
         <div className="flex items-center mb-1">
           <span className="text-xl text-gray-500 mr-2">◾</span>
           <div>
-            <div className="font-semibold text-black">Third Wave Coffee</div>
+            <div className="font-semibold text-black">
+              {splitAddress(destination ?? "").first}
+            </div>
             <div className="text-sm text-gray-500">
-              17th Cross Rd, PWD Quarters, 1st Sector, HSR Layout, Bengaluru,
-              Karnataka
+              {splitAddress(destination ?? "").second}
             </div>
           </div>
         </div>
@@ -44,12 +76,15 @@ export function RideSummary({ setrideSummaryPanel }: any) {
 
       {/* Price */}
       <div className="w-full ml-5 px-2">
-        <div className="text-xl font-bold text-black">₹193.20</div>
+        <div className="text-xl font-bold text-black">₹{vehiclePrice}</div>
       </div>
 
       {/* Confirm Button */}
       <div className="flex flex-col space-y-5 ml-5 mr-5 w-full mt-5">
-        <button className="w-full bg-black text-white text-sm rounded-lg py-2 px-8">
+        <button
+          onClick={createRideHandler}
+          className="w-full bg-black text-white text-sm rounded-lg py-2 px-8"
+        >
           Confirm Ride
         </button>
         <button
@@ -63,4 +98,16 @@ export function RideSummary({ setrideSummaryPanel }: any) {
       </div>
     </div>
   );
+}
+function splitAddress(address: string) {
+  let idx = -1;
+  for (let i = 0; i < address.length; i++) {
+    if (address[i] == ",") {
+      idx = i;
+      break;
+    }
+  }
+  const first = address.slice(0, idx + 1).trim();
+  const second = address.slice(idx + 1).trim();
+  return { first, second };
 }

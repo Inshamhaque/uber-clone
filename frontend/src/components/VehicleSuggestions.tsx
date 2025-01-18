@@ -6,6 +6,8 @@ export function VehicleSuggestions({
   setvehiclepanelopen,
   source,
   destination,
+  setvehicleType,
+  setvehiclePrice,
 }: any) {
   const [carprice, setcarprice] = useState();
   const [bikeprice, setbikeprice] = useState();
@@ -69,6 +71,8 @@ export function VehicleSuggestions({
             console.log("clicked!!!");
             setvehiclepanelopen(false);
             setrideSummaryPanel(true);
+            setvehiclePrice(vehicle.price);
+            setvehicleType(vehicle.name);
           }}
           key={index}
           className={`flex items-center p-2 border ${

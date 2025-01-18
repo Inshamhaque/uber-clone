@@ -1,3 +1,4 @@
+import { rideModel } from "../models/ride.models";
 import { createRide } from "../services/ride.service";
 
 export async function ridecreator(req: any, res: any) {
@@ -28,6 +29,20 @@ export async function ridecreator(req: any, res: any) {
     return res.status(500).json({
       message: "Unable to create ride.",
       error,
+    });
+  }
+}
+export async function pendingrides(req: any, res: any) {
+  try {
+    const rides = await rideModel.find({
+      status: "pending",
+    });
+    return res.status(201).json({
+      rides,
+    });
+  } catch (e) {
+    return res.status(400).json({
+      message: "some error occurred",
     });
   }
 }

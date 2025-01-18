@@ -8,6 +8,11 @@ export function CaptainDashboard() {
   const [online, setonline] = useState(false);
   const [AcceptRidePopup, setAcceptRidePopup] = useState(false);
   const [rideSummaryPanel, setrideSummaryPanel] = useState(false);
+  const [chosenRide, setchosenRide] = useState({
+    _id: "",
+    duration: 0,
+    destination: 0,
+  });
   const AcceptRidePopupRef = useRef(null);
   const rideSummaryPanelRef = useRef(null);
 
@@ -118,6 +123,7 @@ export function CaptainDashboard() {
           </div>
         </div>
         <div className="absolute bottom-4 right-4">
+          {/* accept ride button */}
           <button
             className="bg-white p-2 rounded-full shadow-lg"
             onClick={() => {
@@ -143,7 +149,7 @@ export function CaptainDashboard() {
       </div>
 
       {/* Driver Info Card */}
-      <div className="bg-white shadow-md rounded-t-2xl p-4">
+      <div className="bg-white shadow-md rounded-t-2xl p-6">
         <CaptainDetails />
       </div>
       {/* Accept Ride pop up panel */}
@@ -156,15 +162,19 @@ export function CaptainDashboard() {
           <CaptainAcceptRidePopup
             setAcceptRidePopup={setAcceptRidePopup}
             setrideSummaryPanel={setrideSummaryPanel}
+            setchosenRide={setchosenRide}
           />
         </div>
       </div>
       {/* Ride Summary Panel */}
       <div
         ref={rideSummaryPanelRef}
-        className="scroll-smooth z-10 fixed bottom-0"
+        className="scroll-smooth w-full z-10 fixed bottom-0"
       >
-        <CaptainRideDetails setrideSummaryPanel={setrideSummaryPanel} />
+        <CaptainRideDetails
+          setrideSummaryPanel={setrideSummaryPanel}
+          chosenRide={chosenRide}
+        />
       </div>
     </div>
   );

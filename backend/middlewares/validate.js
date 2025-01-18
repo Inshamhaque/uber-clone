@@ -50,7 +50,7 @@ exports.userLoginSchema = zod_1.default.object({
     password: zod_1.default.string(),
 });
 // captain register schema
-const vehicleTypeEnum = zod_1.default.enum(["car", "motorcycle", "auto"]);
+const vehicleTypeEnum = zod_1.default.enum(["car", "bike", "auto"]);
 exports.captainRegisterSchema = zod_1.default.object({
     fullname: zod_1.default.object({
         firstname: zod_1.default.string().min(3),
@@ -58,17 +58,19 @@ exports.captainRegisterSchema = zod_1.default.object({
     }),
     email: zod_1.default.string().email(),
     password: zod_1.default.string(),
-    status: zod_1.default.string(),
+    status: zod_1.default.string().optional(),
     vehicle: zod_1.default.object({
         color: zod_1.default.string(),
         plate: zod_1.default.string(),
         capacity: zod_1.default.number(),
         vehicleType: vehicleTypeEnum,
     }),
-    location: zod_1.default.object({
+    location: zod_1.default
+        .object({
         ltd: zod_1.default.number(),
         lng: zod_1.default.number(),
-    }),
+    })
+        .optional(),
 });
 // captain login schema
 exports.captainloginSchema = zod_1.default.object({

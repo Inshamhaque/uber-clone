@@ -25,6 +25,8 @@ export function Dashboard() {
   const [inputchosen, setinputchosen] = useState<
     "pickup" | "destination" | null
   >(null);
+  const [vehiclePrice, setvehiclePrice] = useState();
+  const [vehicleType, setvehicleType] = useState();
   // Fetch location suggestions from the backend API
   const fetchLocationSuggestions = async (query: string) => {
     console.log("Input is:", query);
@@ -227,6 +229,8 @@ export function Dashboard() {
           setvehiclepanelopen={setvehiclepanelopen}
           source={pickup}
           destination={destination}
+          setvehicleType={setvehicleType}
+          setvehiclePrice={setvehiclePrice}
         />
       </div>
 
@@ -234,7 +238,13 @@ export function Dashboard() {
         ref={rideSummaryPanelRef}
         className="ride-summary-panel fixed bottom-0 w-full bg-white px-3 py-10 pt-12"
       >
-        <RideSummary setrideSummaryPanel={setrideSummaryPanel} />
+        <RideSummary
+          setrideSummaryPanel={setrideSummaryPanel}
+          vehiclePrice={vehiclePrice}
+          pickup={pickup}
+          destination={destination}
+          vehicleType={vehicleType}
+        />
       </div>
     </div>
   );

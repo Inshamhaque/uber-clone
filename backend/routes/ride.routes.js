@@ -11,4 +11,7 @@ const router = express_1.default.Router();
 router.post("/create-ride", (0, validate_1.validate)(validate_1.createRideSchema), auth_1.authUser, (req, res) => {
     (0, ride_controller_1.ridecreator)(req, res);
 });
+router.get("/pending-rides", (req, res) => {
+    (0, ride_controller_1.pendingrides)(req, res);
+});
 exports.default = router;

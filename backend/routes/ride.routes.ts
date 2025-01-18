@@ -1,6 +1,6 @@
 import express from "express";
 import { createRideSchema, validate } from "../middlewares/validate";
-import { ridecreator } from "../controllers/ride.controller";
+import { pendingrides, ridecreator } from "../controllers/ride.controller";
 import { authUser } from "../middlewares/auth";
 const router = express.Router();
 router.post(
@@ -11,5 +11,7 @@ router.post(
     ridecreator(req, res);
   }
 );
-
+router.get("/pending-rides", (req, res) => {
+  pendingrides(req, res);
+});
 export default router;

@@ -14,7 +14,7 @@ export const userLoginSchema = zod.object({
   password: zod.string(),
 });
 // captain register schema
-const vehicleTypeEnum = zod.enum(["car", "motorcycle", "auto"]);
+const vehicleTypeEnum = zod.enum(["car", "bike", "auto"]);
 export const captainRegisterSchema = zod.object({
   fullname: zod.object({
     firstname: zod.string().min(3),
@@ -22,17 +22,19 @@ export const captainRegisterSchema = zod.object({
   }),
   email: zod.string().email(),
   password: zod.string(),
-  status: zod.string(),
+  status: zod.string().optional(),
   vehicle: zod.object({
     color: zod.string(),
     plate: zod.string(),
     capacity: zod.number(),
     vehicleType: vehicleTypeEnum,
   }),
-  location: zod.object({
-    ltd: zod.number(),
-    lng: zod.number(),
-  }),
+  location: zod
+    .object({
+      ltd: zod.number(),
+      lng: zod.number(),
+    })
+    .optional(),
 });
 // captain login schema
 export const captainloginSchema = zod.object({
