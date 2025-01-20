@@ -7,6 +7,8 @@ import { CaptainSignup } from "./pages/Captain-signup";
 import { Dashboard } from "./pages/Dashboard";
 import { CaptainDashboard } from "./pages/CaptainDashboard";
 import { CaptainRiding } from "./pages/CaptainRiding";
+import { Waiting } from "./pages/Waiting-User";
+// import { Waiting } from "./components/Waiting";
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/captain-dashboard" element={<CaptainDashboard />} />
         <Route path="/captain-riding" element={<CaptainRiding />} />
+        <Route path="/waiting" element={<Waiting />} />
       </Routes>
     </BrowserRouter>
   );

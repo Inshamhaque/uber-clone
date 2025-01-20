@@ -1,6 +1,6 @@
 import { blackListModel } from "../models/blacklist.models";
 import { userModel } from "../models/user.models";
-import { createUser } from "../services/user";
+import { createUser } from "../services/user.service";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 // user creation

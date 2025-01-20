@@ -1,6 +1,6 @@
 import { blackListModel } from "../models/blacklist.models";
 import { captainModel } from "../models/captain.models";
-import { createCaptain } from "../services/captain";
+import { createCaptain } from "../services/captain.service";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 //signup handler

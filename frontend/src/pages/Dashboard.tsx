@@ -27,6 +27,8 @@ export function Dashboard() {
   >(null);
   const [vehiclePrice, setvehiclePrice] = useState();
   const [vehicleType, setvehicleType] = useState();
+  const [ride_id, setride] = useState();
+
   // Fetch location suggestions from the backend API
   const fetchLocationSuggestions = async (query: string) => {
     console.log("Input is:", query);
@@ -244,6 +246,7 @@ export function Dashboard() {
           pickup={pickup}
           destination={destination}
           vehicleType={vehicleType}
+          setride={setride}
         />
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 export function RideSummary({
   setrideSummaryPanel,
@@ -6,9 +7,11 @@ export function RideSummary({
   destination,
   vehiclePrice,
   vehicleType,
+  setride,
 }: any) {
   // can add an animation in the car image part like car,bike and auto come and leave synchronously,
   // const [price, setprice] = useState();
+  const navigate = useNavigate();
   const createRideHandler = async () => {
     // console.log(localStorage.getItem("token"));
     const response = await axios.post(
@@ -26,6 +29,8 @@ export function RideSummary({
     );
     if (response) {
       console.log("ride created successfully");
+      setride(response.data.ride._id);
+      localStorage.setItem("rideId", response.data.ride._id);
     }
   };
   return (
@@ -82,7 +87,11 @@ export function RideSummary({
       {/* Confirm Button */}
       <div className="flex flex-col space-y-5 ml-5 mr-5 w-full mt-5">
         <button
-          onClick={createRideHandler}
+          onClick={() => {
+            createRideHandler();
+            setrideSummaryPanel(false);
+            navigate("/waiting");
+          }}
           className="w-full bg-black text-white text-sm rounded-lg py-2 px-8"
         >
           Confirm Ride

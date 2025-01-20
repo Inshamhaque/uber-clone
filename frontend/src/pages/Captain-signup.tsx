@@ -48,7 +48,6 @@ export function CaptainSignup() {
         return toast.success("user registered successfully", {
           position: "top-right",
         });
-        // Redirect to login page or next step
       }
       return toast.error("some error occurred", {
         position: "top-right",

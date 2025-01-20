@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -9,6 +10,15 @@ const fareRates = {
 };
 
 export function CaptainRideDetails({ setrideSummaryPanel, chosenRide }: any) {
+  async function onClickHandler() {
+    const response = await axios.put(
+      `http://localhost:8080/rides/ride-accept?id=${chosenRide._id}`
+    );
+    console.log(response);
+    if (response) {
+      console.log("REQUEST SENT");
+    }
+  }
   return (
     <div className="w-full p-4 h-screen bg-gray-100">
       {/* Header */}
@@ -82,6 +92,7 @@ export function CaptainRideDetails({ setrideSummaryPanel, chosenRide }: any) {
         <Link
           to="/captain-riding"
           className="flex-1 bg-green-500 text-white text-sm font-semibold py-2 rounded-md mx-2 flex items-center justify-center"
+          onClick={onClickHandler}
         >
           Confirm
         </Link>
