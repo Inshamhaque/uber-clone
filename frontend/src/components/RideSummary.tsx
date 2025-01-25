@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import axios from "axios";
+
 export function RideSummary({
   setrideSummaryPanel,
   pickup,
@@ -9,30 +10,90 @@ export function RideSummary({
   vehicleType,
   setride,
 }: any) {
-  // can add an animation in the car image part like car,bike and auto come and leave synchronously,
-  // const [price, setprice] = useState();
   const navigate = useNavigate();
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [createride, setcreateride] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
+  useEffect(() => {
+    // Establish WebSocket connection
+    const ws = new WebSocket("ws://localhost:8000"); // Replace with your WebSocket server URL
+
+    ws.onopen = () => {
+      console.log("User Connected to WebSocket server");
+    };
+
+    ws.onmessage = (event) => {
+      console.log("Message from server:", JSON.parse(event.data));
+    };
+
+    ws.onclose = () => {
+      console.log("Disconnected from WebSocket server");
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    setSocket(ws);
+    // Cleanup WebSocket connection on unmount
+  }, []);
+
   const createRideHandler = async () => {
-    // console.log(localStorage.getItem("token"));
-    const response = await axios.post(
-      "http://localhost:8080/rides/create-ride",
-      {
-        pickup,
-        destination,
-        vehicleType: vehicleType.toLowerCase(),
-      },
-      {
+    try {
+      const response1 = await axios.get("http://localhost:8080/user/profile", {
         headers: {
           authorization: localStorage.getItem("token"),
         },
+      });
+      const userProfileData = response1.data;
+      setUserProfile(userProfileData);
+      console.log("userprofile:", userProfileData);
+
+      if (!userProfileData) {
+        console.error("User profile not found");
+        return;
       }
-    );
-    if (response) {
-      console.log("ride created successfully");
-      setride(response.data.ride._id);
-      localStorage.setItem("rideId", response.data.ride._id);
+      const response = await axios.post(
+        "http://localhost:8080/rides/create-ride",
+        {
+          pickup,
+          destination,
+          vehicleType: vehicleType.toLowerCase(),
+        },
+        {
+          headers: {
+            authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+
+      if (response) {
+        console.log("Ride created successfully");
+        const rideId = response.data.ride._id;
+        setride(rideId);
+        localStorage.setItem("rideId", rideId);
+
+        // Send ride creation event to WebSocket server
+        if (socket) {
+          socket.send(
+            JSON.stringify({
+              type: "ride-created",
+              rideId,
+              pickup,
+              destination,
+              vehicleType: vehicleType.toLowerCase(),
+              userProfile: userProfileData,
+              vehiclePrice,
+            })
+          );
+          console.log("Ride creation event sent to WebSocket server");
+        }
+      }
+    } catch (error) {
+      console.error("Error creating ride:", error);
     }
   };
+
   return (
     <div className="flex flex-col items-center w-full bg-white rounded-t-lg">
       {/* Title */}
@@ -90,6 +151,7 @@ export function RideSummary({
           onClick={() => {
             createRideHandler();
             setrideSummaryPanel(false);
+            setcreateride(true);
             navigate("/waiting");
           }}
           className="w-full bg-black text-white text-sm rounded-lg py-2 px-8"
@@ -108,10 +170,11 @@ export function RideSummary({
     </div>
   );
 }
+
 function splitAddress(address: string) {
   let idx = -1;
   for (let i = 0; i < address.length; i++) {
-    if (address[i] == ",") {
+    if (address[i] === ",") {
       idx = i;
       break;
     }

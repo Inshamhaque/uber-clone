@@ -3,38 +3,164 @@ import { CaptainDetails } from "../components/CaptainDetails";
 import { CaptainAcceptRidePopup } from "../components/CaptainAcceptRidePopup";
 import gsap from "gsap";
 import { CaptainRideDetails } from "../components/CaptainRideSummary";
-
+import { IncomingRide } from "../components/IncomingRIde";
 export function CaptainDashboard() {
-  const [online, setonline] = useState(false);
-  const [AcceptRidePopup, setAcceptRidePopup] = useState(false);
-  const [rideSummaryPanel, setrideSummaryPanel] = useState(false);
-  const [chosenRide, setchosenRide] = useState({
+  const [online, setOnline] = useState(false);
+  const [acceptRidePopup, setAcceptRidePopup] = useState(false);
+  const [rideSummaryPanel, setRideSummaryPanel] = useState(false);
+  const [chosenRide, setChosenRide] = useState({
     _id: "",
     duration: 0,
-    destination: 0,
+    destination: "",
+    pickup: "",
+    vehicleType: "",
+    vehiclePrice: "",
+    userProfile: {},
   });
-  const AcceptRidePopupRef = useRef(null);
+  const [incomingRide, setIncomingRide] = useState<{
+    _id: string;
+    duration: number;
+    destination: string;
+    pickup: string;
+    vehicleType: string;
+    vehiclePrice: string;
+    userProfile: any;
+  } | null>({
+    _id: "",
+    duration: 0,
+    destination: "",
+    pickup: "",
+    vehicleType: "",
+    vehiclePrice: "",
+    userProfile: {
+      fullname: { firstname: "", lastname: "" },
+      email: "",
+    },
+  });
+  const acceptRidePopupRef = useRef(null);
   const rideSummaryPanelRef = useRef(null);
+  const incomingRideRef = useRef(null);
+  const [incomingRidePanel, setIncomingRidePanel] = useState(false);
+  // WebSocket reference
+  const socketRef = useRef(null);
+
+  // Establish WebSocket connection
+  useEffect(() => {
+    const socket = new WebSocket("ws://localhost:8000");
+    socketRef.current = socket;
+
+    socket.onopen = () => {
+      console.log("WebSocket connected");
+      socket.send(JSON.stringify({ type: "identify", role: "captain" }));
+      if (online) {
+        socket.send(JSON.stringify({ type: "status", status: "online" }));
+      }
+    };
+
+    socket.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        console.log("Received from server(captain-side):", message);
+
+        if (message.type === "new-ride") {
+          const {
+            rideId,
+            pickup,
+            destination,
+            vehicleType,
+            vehiclePrice,
+            userProfile,
+          } = message.data;
+
+          // Set incoming ride and open popup
+          setIncomingRide({
+            _id: rideId,
+            duration: message.data.duration, // Use actual duration from message
+            destination,
+            pickup,
+            vehicleType,
+            vehiclePrice,
+            userProfile,
+          });
+          console.log("Incoming ride:", incomingRide);
+          // setAcceptRidePopup(true); // Open notification popup
+          setIncomingRidePanel(true);
+        }
+      } catch (error) {
+        console.error("Error parsing WebSocket message:", error);
+      }
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.close();
+      }
+    };
+  }, [online]);
+
+  // Accept ride logic
+  const handleAcceptRide = () => {
+    if (socketRef.current && incomingRide) {
+      socketRef.current.send(
+        JSON.stringify({
+          type: "ride-accepted",
+          rideId: incomingRide._id,
+        })
+      );
+      setChosenRide(incomingRide);
+      setAcceptRidePopup(false);
+      setRideSummaryPanel(true);
+    }
+  };
+
+  //incoming ride gsap
+  useEffect(() => {
+    if (incomingRidePanel) {
+      gsap.set(incomingRideRef.current, { visibility: "visible" });
+      gsap.to(incomingRideRef.current, {
+        transform: "translateY(0)",
+        duration: 0.5,
+        ease: "power2.out",
+      });
+    } else {
+      gsap.to(incomingRideRef.current, {
+        transform: "translateY(100%)",
+        duration: 0.5,
+        ease: "power2.in",
+        onComplete: () => {
+          gsap.set(incomingRideRef.current, { visibility: "hidden" });
+        },
+      });
+    }
+  }, [incomingRidePanel]);
 
   useEffect(() => {
-    if (AcceptRidePopup) {
+    if (acceptRidePopup) {
       gsap.fromTo(
-        AcceptRidePopupRef.current,
+        acceptRidePopupRef.current,
         { opacity: 0, scale: 0.8, visibility: "visible" },
         { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" }
       );
     } else {
-      gsap.to(AcceptRidePopupRef.current, {
+      gsap.to(acceptRidePopupRef.current, {
         opacity: 0,
         scale: 0.8,
         duration: 0.3,
         ease: "power2.in",
         onComplete: () => {
-          gsap.set(AcceptRidePopupRef.current, { visibility: "hidden" });
+          gsap.set(acceptRidePopupRef.current, { visibility: "hidden" });
         },
       });
     }
-  }, [AcceptRidePopup]);
+  }, [acceptRidePopup]);
 
   useEffect(() => {
     if (rideSummaryPanel) {
@@ -42,6 +168,7 @@ export function CaptainDashboard() {
         transform: "translateY(0)",
         duration: 0.5,
         ease: "power2.out",
+        visibility: "visible",
       });
     } else {
       gsap.to(rideSummaryPanelRef.current, {
@@ -56,24 +183,9 @@ export function CaptainDashboard() {
     <div className="w-screen h-screen flex flex-col bg-gray-100">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2 bg-white shadow-md">
-        <div className="text-black">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-6 h-6"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M3.75 5.25h16.5M3.75 12h16.5M3.75 18.75h16.5"
-            />
-          </svg>
-        </div>
+        <div className="text-black">...</div>
         <div className="text-lg font-bold text-black">
-          {online ? "Offline" : "Online"}
+          {online ? "Online" : "Offline"}
         </div>
         <div>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -81,101 +193,106 @@ export function CaptainDashboard() {
               type="checkbox"
               className="sr-only peer"
               onChange={() => {
-                setonline((prev) => !prev);
+                setOnline((prev) => !prev);
+                if (
+                  socketRef.current &&
+                  socketRef.current.readyState === WebSocket.OPEN
+                ) {
+                  socketRef.current.send(
+                    JSON.stringify({
+                      type: "status",
+                      status: !online ? "online" : "offline",
+                    })
+                  );
+                }
               }}
             />
-            <div className="w-11 h-6 rounded-full bg-gray-700 peer-checked:bg-blue-800 "></div>
+            <div className="w-11 h-6 rounded-full bg-gray-700 peer-checked:bg-blue-800"></div>
             <div className="w-5 h-5 absolute rounded-full bg-white peer-checked:translate-x-6 transition-transform"></div>
           </label>
         </div>
       </div>
 
       {/* Offline Notification */}
-      <div className="bg-orange-500 text-white flex items-center justify-center px-4 py-2">
-        <div className="text-sm font-semibold">
-          <span>You are offline! </span>
-          <span className="text-xs font-normal">
-            Go online to start accepting jobs.
-          </span>
+      {!online && (
+        <div className="bg-orange-500 text-white flex items-center justify-center px-4 py-2">
+          <div className="text-sm font-semibold">
+            <span>You are offline! </span>
+            <span className="text-xs font-normal">
+              Go online to start accepting jobs.
+            </span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Map Section */}
-      <div className="relative w-full flex-1">
-        <img
-          src="https://www.researchgate.net/publication/323759986/figure/fig3/AS:631576123682823@1527590890164/Map-in-Uber-application-tracking-user-in-a-Yellow-Cab.png"
-          alt="Map"
-          className="h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 flex flex-col justify-center items-center">
-          <div className="bg-yellow-400 w-16 h-16 rounded-full flex justify-center items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              className="w-10 h-10 text-black"
-            >
-              <path d="M10 2a6 6 0 016 6c0 2.79-2.62 6.58-4.77 9.09a1.21 1.21 0 01-1.88 0C6.62 14.58 4 10.79 4 8a6 6 0 016-6zm0 3a3 3 0 100 6 3 3 0 000-6z" />
-            </svg>
-          </div>
-          <div className="mt-2 text-xs font-semibold text-black">
-            CITY CENTER
-          </div>
-        </div>
-        <div className="absolute bottom-4 right-4">
-          {/* accept ride button */}
-          <button
-            className="bg-white p-2 rounded-full shadow-lg"
-            onClick={() => {
-              setAcceptRidePopup(true);
-            }}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6v12m6-6H6"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
+      <div className="relative w-full flex-1">...</div>
+      {/* <div>{incomingRide}</div> */}
 
       {/* Driver Info Card */}
       <div className="bg-white shadow-md rounded-t-2xl p-6">
         <CaptainDetails />
       </div>
-      {/* Accept Ride pop up panel */}
+
+      {/* Add Ride Button */}
+      <div className="fixed bottom-20 right-6">
+        <button
+          className="bg-blue-600 text-white p-4 rounded-full shadow-lg"
+          onClick={() => {
+            setChosenRide({
+              _id: "manual-ride",
+              duration: 15,
+              destination: "Demo Destination",
+              pickup: "Demo Pickup",
+              vehicleType: "Car",
+              vehiclePrice: 10,
+            });
+            setAcceptRidePopup(true);
+          }}
+        >
+          +
+        </button>
+      </div>
+
+      {/* Accept Ride Popup Panel */}
       <div
-        ref={AcceptRidePopupRef}
+        ref={acceptRidePopupRef}
         className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
         style={{ visibility: "hidden" }}
       >
         <div className="bg-white rounded-lg shadow-lg p-6">
           <CaptainAcceptRidePopup
             setAcceptRidePopup={setAcceptRidePopup}
-            setrideSummaryPanel={setrideSummaryPanel}
-            setchosenRide={setchosenRide}
+            handleAcceptRide={handleAcceptRide}
+            chosenRide={chosenRide}
           />
         </div>
       </div>
+
       {/* Ride Summary Panel */}
       <div
         ref={rideSummaryPanelRef}
         className="scroll-smooth w-full z-10 fixed bottom-0"
       >
         <CaptainRideDetails
-          setrideSummaryPanel={setrideSummaryPanel}
+          setRideSummaryPanel={setRideSummaryPanel}
           chosenRide={chosenRide}
         />
       </div>
+
+      {/* Incoming Ride Notification */}
+      {incomingRidePanel && (
+        <div
+          ref={incomingRideRef}
+          className="fixed absolute  inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+          style={{ visibility: "hidden" }}
+        >
+          <IncomingRide
+            incomingRide={incomingRide}
+            setIncomingRidePanel={setIncomingRidePanel}
+          />
+        </div>
+      )}
     </div>
   );
 }
