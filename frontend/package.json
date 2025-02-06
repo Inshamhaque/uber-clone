@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@vis.gl/react-google-maps": "^1.5.1",
     "axios": "^1.7.9",
     "gsap": "^3.12.7",
     "isomorphic-ws": "^5.0.0",

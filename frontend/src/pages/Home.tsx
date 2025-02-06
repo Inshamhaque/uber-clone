@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import image from "/image.avif?url";
+import { useNavigate } from "react-router-dom";
 
 export function Home() {
+  const naviagte = useNavigate();
   return (
     <div className="flex justify-center ">
       <div className="flex w-[375px] flex-col justify-between h-screen">
@@ -26,7 +28,12 @@ export function Home() {
           >
             Get started with Uber
           </Link>
-          <button className="flex justify-center w-full mt-4 px-4 py-2 bg-black text-white rounded hover:bg-gray-800">
+          <button
+            onClick={() => {
+              naviagte("/user-login");
+            }}
+            className="flex justify-center w-full mt-4 px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
+          >
             Continue
             <div>
               <svg

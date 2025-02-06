@@ -9,7 +9,7 @@ import { CaptainDashboard } from "./pages/CaptainDashboard";
 import { CaptainRiding } from "./pages/CaptainRiding";
 import { Waiting } from "./pages/Waiting-User";
 // import { Waiting } from "./components/Waiting";
-
+import { Map_component } from "./components/Maps";
 function App() {
   return (
     <BrowserRouter>
@@ -23,6 +23,7 @@ function App() {
         <Route path="/captain-dashboard" element={<CaptainDashboard />} />
         <Route path="/captain-riding" element={<CaptainRiding />} />
         <Route path="/waiting" element={<Waiting />} />
+        <Route path="/demo" element={<Map_component />} />
       </Routes>
     </BrowserRouter>
   );

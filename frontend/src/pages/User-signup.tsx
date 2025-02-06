@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-
+import { useNavigate } from "react-router-dom";
 export function Usersignup() {
+  const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
     fullname: {
       firstname: "",
@@ -27,6 +28,12 @@ export function Usersignup() {
       }));
     }
   };
+  function showToast() {
+    toast.success("User created successfully", {
+      position: "top-right",
+    });
+    return new Promise((resolve) => setTimeout(resolve, 3000));
+  }
 
   const onSubmitClick = async (e: any) => {
     e.preventDefault(); // Fix preventDefault
@@ -37,14 +44,13 @@ export function Usersignup() {
       );
       if (res.status === 201) {
         console.log("User created successfully");
-        toast.success("User created successfully", {
+        await showToast();
+        navigate("/user-login");
+      }
+      if (res.status == 400) {
+        toast.error("User already exists", {
           position: "top-right",
         });
-      }
-      if(res.status==400){
-        toast.error("User already exists",{
-            position : "top-right"
-        })
       }
     } catch (e: any) {
       console.error("Some error occurred: ", e);
@@ -55,73 +61,77 @@ export function Usersignup() {
   };
 
   return (
-    <div className="overflow-hidden flex flex-col h-screen justify-between m-4">
-      <form className="space-y-4" onSubmit={onSubmitClick}>
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-          alt="Uber Logo"
-          className="w-20 mt-6 h-auto mb-4"
-        />
-        <h2 className="text-lg font-semibold">Enter your email and password</h2>
-        <div className="flex space-x-2">
+    <div className="overflow-hidden flex flex-col w-full h-screen justify-between items-center  m-4">
+      <div className=" border px-4 py-2 rounded-lg w-[375px] flex flex-col justify-between h-screen">
+        <form className="space-y-4" onSubmit={onSubmitClick}>
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
+            alt="Uber Logo"
+            className="w-20 mt-6 h-auto mb-4"
+          />
+          <h2 className="text-lg font-semibold">
+            Enter your email and password
+          </h2>
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              name="firstname"
+              value={credentials.fullname.firstname}
+              onChange={onInputChange}
+              placeholder="First Name"
+              className="p-2 w-full bg-gray-200 text-black mt-4 px-5 py-3 rounded-lg"
+            />
+            <input
+              type="text"
+              name="lastname"
+              value={credentials.fullname.lastname}
+              onChange={onInputChange}
+              placeholder="Last Name"
+              className="p-2 w-full bg-gray-200 text-black mt-4 px-5 py-3 rounded-lg"
+            />
+          </div>
           <input
-            type="text"
-            name="firstname"
-            value={credentials.fullname.firstname}
+            type="email"
+            name="email"
+            value={credentials.email}
             onChange={onInputChange}
-            placeholder="First Name"
+            placeholder="Enter your email"
             className="p-2 w-full bg-gray-200 text-black mt-4 px-5 py-3 rounded-lg"
           />
           <input
-            type="text"
-            name="lastname"
-            value={credentials.fullname.lastname}
+            type="password"
+            name="password"
+            value={credentials.password}
             onChange={onInputChange}
-            placeholder="Last Name"
+            placeholder="Enter your password"
             className="p-2 w-full bg-gray-200 text-black mt-4 px-5 py-3 rounded-lg"
           />
-        </div>
-        <input
-          type="email"
-          name="email"
-          value={credentials.email}
-          onChange={onInputChange}
-          placeholder="Enter your email"
-          className="p-2 w-full bg-gray-200 text-black mt-4 px-5 py-3 rounded-lg"
-        />
-        <input
-          type="password"
-          name="password"
-          value={credentials.password}
-          onChange={onInputChange}
-          placeholder="Enter your password"
-          className="p-2 w-full bg-gray-200 text-black mt-4 px-5 py-3 rounded-lg"
-        />
-        <button
-          type="submit"
-          className="w-full bg-black text-white mt-4 px-4 py-2 text-lg rounded-lg"
-        >
-          Continue
-        </button>
-        <p className="flex justify-center items-center mt-3 text-gray-600">
-          Already have an Account?{" "}
-          <Link
-            to="/user-login"
-            className="text-blue-500 underline hover:text-blue-500 ml-1"
+          <button
+            type="submit"
+            className="w-full bg-black text-white mt-4 px-4 py-2 text-lg rounded-lg"
           >
-            Login now
+            Continue
+          </button>
+          <p className="flex justify-center items-center mt-3 text-gray-600">
+            Already have an Account?{" "}
+            <Link
+              to="/user-login"
+              className="text-blue-500 underline hover:text-blue-500 ml-1"
+            >
+              Login now
+            </Link>
+          </p>
+        </form>
+        <div className="w-full">
+          <Link
+            to="/captain-login"
+            className="w-full block bg-yellow-600 text-white text-center mb-4 px-4 py-2 text-lg rounded-lg"
+          >
+            Continue as Captain
           </Link>
-        </p>
-      </form>
-      <div className="w-full">
-        <Link
-          to="/captain-login"
-          className="w-full block bg-yellow-600 text-white text-center mb-4 px-4 py-2 text-lg rounded-lg"
-        >
-          Continue as Captain
-        </Link>
+        </div>
+        <ToastContainer />
       </div>
-      <ToastContainer />
     </div>
   );
 }

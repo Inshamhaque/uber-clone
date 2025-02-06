@@ -4,6 +4,7 @@ import { LocationSuggestions } from "../components/LocationSuggestions";
 import { VehicleSuggestions } from "../components/VehicleSuggestions";
 import { RideSummary } from "../components/RideSummary";
 import axios from "axios";
+import { Map_component } from "../components/Maps";
 type inputs = {
   pickup: string;
   destination: string;
@@ -109,11 +110,7 @@ export function Dashboard() {
   return (
     <div className="overflow-hidden  h-screen">
       <div ref={backgroundPanel} className="h-[70%] h-screen w-screen">
-        <img
-          src="https://www.researchgate.net/publication/323759986/figure/fig3/AS:631576123682823@1527590890164/Map-in-Uber-application-tracking-user-in-a-Yellow-Cab.png"
-          alt="Map"
-          className="h-full w-full object-cover"
-        />
+        <Map_component />
       </div>
 
       <div className="h-[100%] m-4 ml-4 space-y-3 relative">
@@ -144,7 +141,7 @@ export function Dashboard() {
             )}
           </div>
 
-          <form className="relative py-3">
+          <form className="relative py-3 z-10">
             <div className="absolute ml-4 mt-8 mb-2 line w-[3px] h-8 bg-gray-600 rounded-xl"></div>
             <div className="absolute mt-2 ml-2">
               <svg

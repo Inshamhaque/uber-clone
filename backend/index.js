@@ -60,5 +60,5 @@ app.use("/captain", captain_routes_1.default);
 app.use("/maps", maps_routes_1.default);
 app.use("/rides", ride_routes_1.default);
 app.listen(8080, () => {
-    console.log("app running on port 3000");
+    console.log("app running on port 8080");
 });
