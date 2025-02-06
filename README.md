@@ -30,8 +30,8 @@ This is an Uber-like ride-hailing application built using modern web technologie
 ## Tech Stack
 - **Frontend:** React, Tailwind CSS, GSAP (for animations)
 - **Backend:** Node.js, WebSocket, Express.js
-- **Database:** PostgreSQL / MongoDB (planned)
-- **State Management:** Recoil
+- **Database:** MongoDB
+- **State Management:** Recoil (planned)
 
 ## Future Work
 - Implement ride-matching functionality for carpooling.
