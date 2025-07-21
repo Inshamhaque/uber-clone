@@ -16,7 +16,7 @@ exports.logout = exports.userProfile = exports.loginUser = exports.registerUser 
 const blacklist_models_1 = require("../models/blacklist.models");
 const user_models_1 = require("../models/user.models");
 const user_service_1 = require("../services/user.service");
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcrypt_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 // user creation
 const registerUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

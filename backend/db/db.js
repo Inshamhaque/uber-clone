@@ -16,7 +16,7 @@ exports.connectToDB = connectToDB;
 const mongoose_1 = __importDefault(require("mongoose"));
 function connectToDB() {
     return __awaiter(this, void 0, void 0, function* () {
-        mongoose_1.default.connect('mongodb+srv://haqueinsham:Deadlydevil@cluster0.dmne0nl.mongodb.net/Uber-Clone').then(() => {
+        mongoose_1.default.connect('mongodb+srv://haqueinsham:BLbPwkeRXAw4Qzdd@cluster0.zj28cv7.mongodb.net/test-uber-clone').then(() => {
             console.log('Connected to DB');
         }).catch(e => console.log(e));
     });

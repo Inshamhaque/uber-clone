@@ -20,7 +20,7 @@ exports.activeCaptain = activeCaptain;
 const blacklist_models_1 = require("../models/blacklist.models");
 const captain_models_1 = require("../models/captain.models");
 const captain_service_1 = require("../services/captain.service");
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const bcrypt_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 //signup handler
 function register(req, res) {
