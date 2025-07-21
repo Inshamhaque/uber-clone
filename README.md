@@ -62,7 +62,7 @@ This is an Uber-like ride-hailing application built using modern web technologie
 5. Open `http://localhost:3000` in the browser to use the app.
 
 ## Contributors
-- **Inshamul Haque** (Full Stack Developer) - [GitHub](https://github.com/Inshamhaque)
+- **Inshamul Haque** - [GitHub](https://github.com/Inshamhaque)
 
 ---
 ⚠️ **Disclaimer:** This project is for learning purposes only and is not affiliated with Uber Technologies Inc.
